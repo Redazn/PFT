@@ -5,7 +5,7 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
-    name="docpft",
+    name="PFT",
     version="0.1.0",
     description="Quantum-Hybrid Document Processing with PFT Methods",
     long_description=long_description,
