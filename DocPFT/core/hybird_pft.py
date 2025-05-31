@@ -1,7 +1,7 @@
 from typing import Tuple, Optional
 import numpy as np
 from .classical_pft import ClassicalPFT
-from .quantum_pft import QuantumPFT
+from .q_inspired_pft import QuantumPFT
 
 class HybridPFT:
     """Hybrid Classical-Quantum Fusion System"""
