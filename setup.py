@@ -24,7 +24,7 @@ setup(
     ],
     keywords="quantum, document, processing, pft, hybrid, ai",
     packages=find_packages(include=["DocPFT", "DocPFT.*"]),
-    python_requires=">=3.8, <3.11",
+    python_requires=">=3.8",
     install_requires=[
         "numpy>=1.20.0",
         "pennylane>=0.22.0",
