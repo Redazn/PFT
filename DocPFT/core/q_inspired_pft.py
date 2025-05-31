@@ -3,50 +3,40 @@ from pennylane import numpy as pnp
 from typing import Tuple
 
 class QuantumPFT:
-    """Quantum-Enhanced Probabilistic Fusion Theory"""
-    
-    def __init__(self, n_qubits=4, layers=3):
-        self.dev = qml.device("default.qubit", wires=n_qubits)
+    def __init__(self, n_qubits=3):
         self.n_qubits = n_qubits
-        self.layers = layers
-        self.params = None
+        self.dev = qml.device("default.qubit", wires=n_qubits)
+        self.window = []
+        self.window_size = 5
         
-    def _circuit(self, params, A, B, t):
-        """Parameterized quantum circuit for PFT"""
-        # Feature embedding
-        qml.RY(A * np.pi, wires=0)
-        qml.RY(B * np.pi, wires=1)
-        
-        # Time-dependent processing
-        for layer in range(self.layers):
-            # Parametrized rotations
-            for qubit in range(self.n_qubits):
-                qml.Rot(*params[layer][qubit], wires=qubit)
+    def update_window(self, value):
+        self.window.append(value)
+        if len(self.window) > self.window_size:
+            self.window.pop(0)
             
-            # Entanglement
-            qml.CNOT(wires=[0, 1])
-            qml.CNOT(wires=[1, 2])
+    def spacetime_curvature(self):
+        if len(self.window) < 2:
+            return 0
+        return np.var(self.window)
         
-        # Measurement
+    def quantum_circuit(self, params, feature, t):
+        curvature = self.spacetime_curvature()
+        warp_factor = np.exp(-0.5 * curvature * t)
+        # Encode feature vector
+        qml.RY(feature[0] * np.pi * warp_factor, wires=0)
+        qml.RY(feature[1] * np.pi * warp_factor, wires=1)
+        qml.RZ(params[0] * np.sin(t * np.pi) * warp_factor, wires=0)
+        qml.CNOT(wires=[0, 1])
+        qml.RY(params[1] * np.cos(t * np.pi) * warp_factor, wires=1)
         return qml.expval(qml.PauliZ(0) @ qml.PauliZ(1))
     
-    def initialize_params(self):
-        """Initialize trainable parameters"""
-        self.params = pnp.random.normal(0, 0.1, size=(self.layers, self.n_qubits, 3))
-        self.params.requires_grad = True
-    
-    def fuse(self, A: float, B: float, t: float) -> float:
-        """Quantum fusion with adaptive learning"""
-        if self.params is None:
-            self.initialize_params()
-            
+    def process(self, feature, t, params):
+        self.update_window(feature)
         @qml.qnode(self.dev)
-        def circuit(params):
-            return self._circuit(params, A, B, t)
-            
-        # Optimization step
-        cost_fn = lambda p: -circuit(p)
-        self.params = qml.AdamOptimizer(stepsize=0.05).step(cost_fn, self.params)
-        
-        output = circuit(self.params)
-        return 0.76 + 0.1 * (output + 1) / 2  # Normalize to [0.76, 0.86]
+        def circuit():
+            return self.quantum_circuit(params, feature, t)
+        try:
+            output = circuit()
+            return 0.5 + 0.2 * output
+        except:
+            return 0.5  # Default value on error
