@@ -1,3 +1,5 @@
+`mermaid
+
 %% Fusion Full Machine v2 Architecture Diagram
 %% For GitHub README.md or documentation
 
